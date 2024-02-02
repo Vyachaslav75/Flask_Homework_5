@@ -11,56 +11,58 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    logger.info('Отработал GET запрос.')
+    return {"message": "Start page"}
 
 
-class Task(BaseModel):
+class User(BaseModel):
     id: int
-    title: str
-    description: str
+    name: str
+    email: str
+    password: str
     status: str
 
 
-tasks = []
+users = []
 
 
-@app.get("/tasks/", response_model=list[Task])
-async def read_task():
+@app.get("/users/", response_model=list[User])
+async def read_user():
     logger.info('Отработал POST запрос.')
-    return tasks
+    return users
 
 
-@app.get("/task/{task_id}/", response_model=Task)
-async def create_item(task_id: int):
-    for task in tasks:
-        if task:
+@app.get("/user/{user_id}/", response_model=User)
+async def create_item(user_id: int):
+    for user in users:
+        if user.id == user_id:
             logger.info('Отработал POST запрос.')
-            return task
-        return HTTPException(status_code=404, detail="Task not found")
+            return user
+        return HTTPException(status_code=404, detail="User not found")
 
 
-@app.post("/task/", response_model=Task)
-async def create_task(task: Task):
-    tasks.append(task)
+@app.post("/user/", response_model=User)
+async def create_user(user: User):
+    users.append(user)
     logger.info('Отработал POST запрос.')
-    return task
+    return user
 
 
-@app.put("/task/{task_id}", response_model=Task)
-async def update_task(task_id: int, task: Task):
-    for i, task_ in enumerate(tasks):
-        if task_.id == task_id:
-            tasks[i] = task
-            logger.info(f'Отработал PUT запрос для task id = {task_id}.')
-            return task
-        return HTTPException(status_code=404, detail="Task not found")
+@app.put("/user/{user_id}", response_model=User)
+async def update_user(user_id: int, user: User):
+    for i, user_ in enumerate(users):
+        if user_.id == user_id:
+            users[i] = user
+            logger.info(f'Отработал PUT запрос для user id = {user_id}.')
+            return user
+        return HTTPException(status_code=404, detail="User not found")
 
 
-@app.delete("/task/{task_id}", response_model=Task)
-async def delete_task(task_id: int):
-    for i, task in enumerate(tasks):
-        if task.id == task_id:
-            tasks[i].status = "deleted"
-            logger.info(f'Отработал PUT запрос для task id = {task_id}.')
-            return task
-        return HTTPException(status_code=404, detail="Task not found")
+@app.delete("/user/{user_id}", response_model=User)
+async def delete_user(user_id: int):
+    for i, user in enumerate(users):
+        if user.id == user_id:
+            users[i].status = "deleted"
+            logger.info(f'Отработал PUT запрос для user id = {user_id}.')
+            return user
+        return HTTPException(status_code=404, detail="User not found")
